@@ -1,0 +1,50 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2023/11/30 09:57:18
+// Design Name: 
+// Module Name: debounce_sync
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module datapath(input wire clk, rst, inc, loadP, 
+input wire [2:0] dice1, dice2,
+output wire D6, D7,D11,eq
+
+    );
+    wire tc;
+    wire [3:0] sum;
+    reg [3:0] point;
+    modcnt_1to6  d1( .clk(clk), .rst(rst), .inc(inc), .Q(dice1), .tc(tc));
+    modcnt_1to6  d2( .clk(clk), .rst(rst), .inc(inc), .Q(dice2), .tc(tc));
+    
+    assign sum = dice1 + dice2;
+    
+    always@(posedge clk)
+        if(rst) point <= 4'd0;
+        else if(loadP) point <= sum;
+    assign D6 = (sum == 4'b0110);
+    assign D7 = (sum == 4'b0111)?1:0;
+    assign D11 = (sum == 4'd11)?1:0;
+    assign eq = (sum == point)?1:0;
+    
+    
+    
+    
+    
+    
+    
+endmodule
