@@ -1,0 +1,38 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2023/11/30 09:57:18
+// Design Name: 
+// Module Name: debounce_sync
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module dice_core(input clk, rst,roll,inc,roll_clean, output win,loadP, lose, output [2:0] dice1, dice2
+
+    );
+    
+    controller u1(clk, rst, roll, D6, D7, D11, eq,
+                  win, lose
+    );
+    
+    datapath u0(clk, rst, inc, loadP, 
+ dice1, dice2,
+ D6, D7,D11,eq
+
+    );
+    
+    debounce_sync u2(.clk(clk), .ext_in(roll) ,.sig(roll_clean));
+endmodule
