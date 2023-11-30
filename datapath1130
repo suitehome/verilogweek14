@@ -1,0 +1,29 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2023/11/30 20:49:36
+// Design Name: 
+// Module Name: datapath
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module datapath(input wire [11:0]g_num1,g_num2,num_p1,num_p2,
+    output wire  success
+    );
+    assign success = ((g_num1 == num_p2)||(g_num2 == num_p1))? 1:0;
+        
+    
+endmodule
