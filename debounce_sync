@@ -1,0 +1,34 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2023/11/30 09:57:18
+// Design Name: 
+// Module Name: debounce_sync
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+`default_nettype none
+module debounce_sync(input wire clk, ext_in, output reg sig
+
+    );
+    reg t;
+    
+    always@(posedge clk)
+    begin
+    t <= ext_in;
+    sig <= t;
+    end
+   
+endmodule
