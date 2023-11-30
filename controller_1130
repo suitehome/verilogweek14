@@ -1,0 +1,61 @@
+`timescale 1ns / 1ps
+`define nettype none
+module controller(
+    input wire clk,rst,
+    input wire [11:0] input_number,
+    input turn,turn_end,
+    output  reg [11:0]g_num1,g_num2,num_p1,num_p2
+    );
+    localparam [3:0] S0 = 4'd0, S1 = 4'd1, S2 = 4'd2, S3 = 4'd3,S4 = 4'd4, S5 = 4'd5, S6 = 4'd6, S7 = 4'd7,
+                     S8 = 4'd8, S9 = 4'd9;
+     reg [3:0] state, next_state;
+     
+     wire success;
+     reg [1:0]winner;
+     always@(posedge clk)
+        if(rst)
+            state <= S0;
+         else 
+            state <= next_state;
+            
+      always@*
+        case(state)
+            S0: if(turn) begin
+                    num_p1[11:0] = input_number[11:0];
+                     next_state <= S1;
+                   end
+                    
+                       
+            S1: if(turn_end)
+                    next_state<=S2;
+                    
+            S2: if(turn) begin 
+                    num_p2[11:0] = input_number[11:0];
+                    next_state <= S3;       
+                    end
+            S3: if(turn_end)
+                    next_state <= S4;        
+                    
+            S4: if(turn) begin 
+                    g_num1[11:0] = input_number[11:0];
+                    next_state <= S5;   
+                    end
+             S5: if(success)
+                    next_state <= S8;
+                 else
+                    next_state <= S4; 
+             
+             S6: if(turn) begin 
+                    g_num2[11:0] = input_number[11:0];
+                    next_state <= S7;
+                    end
+             S7:
+                 if(success)
+                    next_state <= S9;
+                 else
+                    next_state <= S4;
+              
+             S8: begin next_state <= S0; winner <= 2'b01; end
+             default: begin next_state <= S0; winner <= 2'b10; end  
+             endcase
+endmodule
