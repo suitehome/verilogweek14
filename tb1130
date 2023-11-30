@@ -1,0 +1,203 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2023/11/30 21:03:08
+// Design Name: 
+// Module Name: tb_baseball_top
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module tb_baseball_top(
+
+    );
+    reg  clk,rst;
+    reg[11:0] input_number;
+    reg turn, turn_end;
+    wire success_result;
+    baseball_top uut (.clk(clk),.rst(rst), .turn(turn),.turn_end(turn_end),  .input_number(input_number),
+            .success_result(success_result)
+            
+    );
+    initial begin 
+    clk = 0;
+    rst = 0;
+    #5;
+    input_number  = 12'b0000_1111_0000; //enter1
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+    input_number  = 12'b0000_0000_1111; //enter 2 
+    #5
+    turn = 1; 
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+        input_number  = 12'b0000_1111_0000; //guess1
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+    input_number  = 12'b0000_0000_1111;//guess2
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5    input_number  = 12'b0000_0000_1111;
+    turn_end = 0;
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    turn_end = 0;
+    #5
+    #5;
+    input_number  = 12'b0000_1111_0000; //enter1
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+    input_number  = 12'b0000_0000_1111; //enter 2 
+    #5
+    turn = 1; 
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+        input_number  = 12'b0000_1111_0000; //guess1
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+    input_number  = 12'b0000_0000_1111;//guess2
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5    input_number  = 12'b0000_0000_1111;
+    turn_end = 0;
+    #5
+    turn = 1;
+    #5
+    
+   turn_end = 1;
+   turn = 0;
+   turn_end = 0;
+    #5
+    #5;
+    input_number  = 12'b0000_1111_0000; //enter1
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+    input_number  = 12'b0000_0000_1111; //enter 2 
+    #5
+    turn = 1; 
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+        input_number  = 12'b0000_1111_0000; //guess1
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+    input_number  = 12'b0000_0000_1111;//guess2
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5    input_number  = 12'b0000_0000_1111;
+    turn_end = 0;
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    turn_end = 0;
+    #5
+    #5;
+    input_number  = 12'b0000_1111_0000; //enter1
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+    input_number  = 12'b0000_0000_1111; //enter 2 
+    #5
+    turn = 1; 
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+        input_number  = 12'b0000_1111_0000; //guess1
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5
+    turn_end = 0;
+    input_number  = 12'b0000_0000_1111;//guess2
+    #5
+    turn = 1;
+    #5
+    turn_end = 1;
+    turn = 0;
+    #5    input_number  = 12'b0000_0000_1111;
+    turn_end = 0;
+    #5
+    turn = 1;
+    #5
+    
+   turn_end = 1;
+   turn = 0;
+   turn_end = 0;
+    #5
+    $finish;
+    end
+    
+    always  #5 clk = ~clk;
+endmodule
