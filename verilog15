@@ -1,0 +1,244 @@
+`timescale 1ns / 1ps
+
+
+module controller(input clk, rst, roll,  D6, D7, D11, eq,
+                  output loadP,win, lose,inc,output wire [2:0] state_out
+    );
+    
+localparam [2:0] S0 = 3'd0, S1 = 3'd1, S2 = 3'd2, S3 = 3'd3, S4 = 3'd4, S5 = 3'd5, S6 = 3'd6;
+    reg [2:0] state, next_st;
+    assign state_out = state;
+    always@(posedge clk)    
+        if(rst)
+            state <= S0;
+        else
+            state <= next_st;
+            
+    always@(D7,D6,D11,roll,next_st,inc,eq,state)
+        case(state)
+        S0: if(roll == 0) next_st = S0; 
+                else 
+                 next_st = S1;//SHhould designate some value otherwise latches are generated 
+        S1: if(roll&& inc) next_st = S1;
+             else if(D7|D11) next_st = S2; //win 
+             else if(D6) next_st = S3; //LOSE
+             else next_st = S4; //2nd try
+        S2: next_st = S2;
+        S3: next_st = S3;
+        S4: if(roll) next_st = S5; else next_st = S4;
+        S5: if(roll&& inc) next_st = S4;
+             else if(D7|D6) next_st = S3; //lose
+             else if(eq) next_st = S2; //win
+             else next_st = S4; //3nd try
+        default: next_st  = S0;
+        endcase
+              
+       assign win = (state == S2)? 1:0;
+       assign lose = (state == S3)? 1:0;
+       assign inc = (state == S1 && roll) || (state == S5 && roll)? 1:0;
+       assign loadP = (state == S1 && ~(roll | D7 |D11|D6))?1:0;
+       
+endmodule
+
+
+
+
+
+
+
+
+module datapath(input wire clk, rst, inc, loadP, output wire D6, D7,D11,eq, 
+                output wire [2:0] dice1, dice2);
+
+wire tc;
+wire [3:0] sum;
+reg [3:0] point;
+
+counter_1to6 d1 (.clk(clk), .rst(rst), .inc(inc), .Q(dice1), .tc(tc));
+counter_1to6 d2 (.clk(clk), .rst(rst), .inc(tc), .Q(dice2), .tc());
+
+assign sum = dice1+dice2;
+
+always @(posedge clk)
+  if(rst) point <= 4'd0;
+  else if(loadP) point <= sum;
+assign D6 = (sum == 4'b0110)?1:0;
+assign D7 = (sum == 4'b0111)?1:0;
+assign D11 = (sum == 4'd11)?1:0;
+assign eq = (sum == point)?1:0;
+  
+endmodule
+
+
+
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2023/11/30 09:57:14
+// Design Name: 
+// Module Name: counter_1to6
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module counter_1to6(input clk, rst, inc, output reg [2:0] Q, output tc);
+
+always @(posedge clk)
+  if(rst)
+     Q <= 3'b001;
+  else if(inc) begin
+     Q <= Q + 1;
+     if(Q == 3'b110)
+        Q <= 3'b001;
+   end
+assign tc = (Q == 3'b110 && inc)?1:0;
+     
+endmodule
+
+
+
+`timescale 1ns / 1ps
+module pwm
+# (parameter DUTY = 10)
+(
+input wire clk,
+input wire rst,
+input wire sig_in,
+output wire sig_out
+);
+reg [13:0]cnt;
+wire tick;
+reg [6:0] cnt_tick;
+wire pulse;
+always @(posedge clk)
+if (rst)
+cnt <= 13'h0000;
+else if (cnt < 10000) // div by 10000 -> freq = 10KHz
+cnt <= cnt + 1'b1;
+else
+cnt <= 13'h0000;
+assign tick = (cnt == 2)? 1 : 0;
+always @(posedge clk or posedge tick)
+if (rst)
+cnt_tick <= 7'h00;
+else if (tick)
+if (cnt_tick < 100)
+cnt_tick <= cnt_tick + 1'b1;
+else
+cnt_tick <= 7'h00;
+
+assign sig_out = sig_in&(cnt_tick <DUTY) // 여기에 괄호가 없다면? 이것때문에 문제였나?;
+endmodule
+
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2023/11/30 09:57:18
+// Design Name: 
+// Module Name: debounce_sync
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module debounce_sync(input wire clk, ext_in, output reg sig
+
+    );
+    reg t;
+    
+    always@(posedge clk)
+    begin
+    t <= ext_in;
+    sig <= t;
+    end
+   
+endmodule
+
+
+
+ module dice_core (input wire clk, rst, roll, 
+ 	output wire CA,CB,CC,CD,CE,CF,CG,
+	
+	output     wire   DP,
+	output wire [7:0] AN,
+             output wire LED16_R,LED16_G,LED16_B,
+             output wire LED17_R,LED17_G,LED17_B);
+ 
+ wire loadP, inc, D6,D7,D11,eq, roll_clean;
+ wire [2:0]dice1,dice2;
+ wire win,lose;
+ wire win_sig,lose_sig;
+ wire sseg[6:0];
+ wire ssDP;
+ wire [2:0]state_out;
+ assign {CA,CB,CC,CD,CE,CF,CG} = {sseg[0],sseg[1],sseg[2],sseg[3],sseg[4],sseg[5],sseg[6]};
+ assign DP = ssDP;
+ assign LED16_R = (lose&&lose_sig);
+ assign LED17_B =  (win && win_sig);
+ pwm pwm1(.clk(clk),.rst(rst), .sig_in(win),.sig_out(win_sig));
+  pwm pwm2(.clk(clk),.rst(rst), .sig_in(lose),.sig_out(lose_sig));
+datapath u0 (clk, rst, inc, loadP, D6, D7,D11,eq, dice1, dice2);
+
+
+controller u1 (.clk(clk), .rst(rst), .roll(roll_clean), 
+.D6(D6), .D7(D7), .D11(D11), .eq(eq)
+,.loadP(loadP), .win(win), .lose(lose),.inc(inc),.state_out(state_out));
+
+debounce_sync u2 (.clk(clk), .ext_in(roll), .sig(roll_clean));
+
+ss_drive ss_drive (
+    .clk(clk), 
+    .rst(rst), 
+    .data7({3'b000,D7}), 
+    .data6({3'b000,inc}), 
+    .data5({3'b000,eq}), 
+    .data4({3'b000,inc}), 
+    .data3({3'b000,loadP}), 
+    .data2({1'b0,state_out}), 
+    
+   
+.data1({1'b0,dice2}), 
+    .data0({1'b0,dice1}), 
+    .mask(8'b1111_1111), 
+    .ssA(sseg[0]), 
+   .ssB(sseg[1]), 
+   .ssC(sseg[2]), 
+   .ssD(sseg[3]), 
+   .ssE(sseg[4]), 
+   .ssF(sseg[5]), 
+   
+.ssG(sseg[6]), 
+    .ssDP(ssDP), 
+    .AN7(AN[7]), 
+    .AN6(AN[6]), 
+    .AN5(AN[5]), 
+    .AN4(AN[4]),
+    .AN3(AN[3]), 
+    .AN2(AN[2]), 
+    .AN1(AN[1]), 
+    .AN0(AN[0])
+    );
+endmodule
